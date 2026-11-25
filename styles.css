@@ -532,3 +532,6 @@ body.signed-out .demo-note { display: none; }
 #playerVideo { display: block; width: 100%; max-height: calc(100vh - 140px); background: #000; }
 #playerVideo[hidden] { display: none; }
 @media (max-width: 600px) { .player-dlg { width: 100vw; height: 100vh; max-height: none; margin: 0; border-radius: 0; } #playerSpeed { display: none; } }
+
+/* anything marked hidden stays hidden, whatever its other styles say */
+[hidden] { display: none !important; }
