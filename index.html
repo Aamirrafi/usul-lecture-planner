@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Plan and track your Usul Academy lectures: hours per week, finish dates and watched minutes.">
+  <meta name="theme-color" content="#014732">
+  <title>Usul Lecture Planner</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('cp-theme')||'light'}catch(e){document.documentElement.dataset.theme='light'}</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="signed-out">
+  <section id="signin" class="signin" hidden>
+    <div class="signin-card">
+      <div class="signin-brand"><svg class="star" viewBox="0 0 256 256" width="48" height="48" aria-hidden="true"><g fill="currentColor" transform="translate(0,256) scale(0.1,-0.1)"><path d="M1084 2364 l-181 -184 -264 -2 -264 -3 -2 -265 -3 -265 -187 -182 -188 -182 188 -188 187 -188 0 -268 0 -267 267 0 268 0 187 -187 187 -187 182 185 183 184 268 5 269 5 -1 261 -1 260 186 185 c101 101 185 189 185 194 0 6 -83 93 -185 195 l-185 185 0 262 0 263 -263 0 -262 0 -185 185 c-102 102 -189 185 -195 184 -5 -1 -91 -84 -191 -185z m264 -33 c209 -143 354 -333 382 -499 14 -87 -2 -164 -57 -262 -90 -160 -95 -172 -90 -226 6 -60 29 -108 90 -189 42 -55 44 -61 35 -98 -27 -123 -154 -242 -340 -321 -84 -36 -116 -33 -229 24 -154 77 -251 174 -284 283 l-15 50 47 61 c95 126 112 218 59 311 -73 126 -96 174 -112 233 -51 186 89 424 365 625 36 26 71 47 79 47 7 0 39 -18 70 -39z"/></g></svg></div>
+      <h1>Usul Lecture Planner</h1>
+      <p class="muted">Plan your lectures, see when you'll finish, and keep track of what you've watched, on any device.</p>
+      <button class="btn primary wide" id="msBtn" hidden>Sign in with Microsoft</button>
+      <div class="signin-or" id="msOr" hidden><span>or</span></div>
+      <form id="emailForm" class="signin-form">
+        <label class="field">Email address<input id="signinEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+        <button class="btn wide" id="emailBtn">Email me a sign-in link</button>
+      </form>
+      <p class="hint" id="signinMsg" role="status"></p>
+      <p class="hint signin-foot">Your planner is private to your account. It reads only lecture names and lengths from Teams, and plays lectures straight from SharePoint.</p>
+      <p class="hint">Made by a student for Usul Academy students. Not an official Usul Academy service.</p>
+    </div>
+  </section>
+  <div id="demoNote" class="demo-note" hidden>Demo mode: your planner is saved only in this browser. Add your Supabase details to <code>config.js</code> to turn on accounts.</div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><svg class="star" viewBox="0 0 256 256" width="30" height="30" aria-hidden="true"><g fill="currentColor" transform="translate(0,256) scale(0.1,-0.1)"><path d="M1084 2364 l-181 -184 -264 -2 -264 -3 -2 -265 -3 -265 -187 -182 -188 -182 188 -188 187 -188 0 -268 0 -267 267 0 268 0 187 -187 187 -187 182 185 183 184 268 5 269 5 -1 261 -1 260 186 185 c101 101 185 189 185 194 0 6 -83 93 -185 195 l-185 185 0 262 0 263 -263 0 -262 0 -185 185 c-102 102 -189 185 -195 184 -5 -1 -91 -84 -191 -185z m264 -33 c209 -143 354 -333 382 -499 14 -87 -2 -164 -57 -262 -90 -160 -95 -172 -90 -226 6 -60 29 -108 90 -189 42 -55 44 -61 35 -98 -27 -123 -154 -242 -340 -321 -84 -36 -116 -33 -229 24 -154 77 -251 174 -284 283 l-15 50 47 61 c95 126 112 218 59 311 -73 126 -96 174 -112 233 -51 186 89 424 365 625 36 26 71 47 79 47 7 0 39 -18 70 -39z"/></g></svg><span>Usul <span class="brand-sub">Lecture Planner</span></span></div>
+      <div class="row">
+        <button class="btn ghost icon-btn" data-act="theme" id="themeBtn" aria-label="Switch light or dark theme" title="Switch theme"></button>
+        <button class="btn ghost" data-act="open-settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path fill="none" stroke="currentColor" stroke-width="1.8" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+          <span class="hide-sm">Settings</span>
+        </button>
+        <button class="btn hide-sm" data-act="open-add">Add manually</button>
+        <button class="btn primary" data-act="open-teams">+ Add from Teams</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="pacebar" id="pace"></div>
+
+  <main>
+    <nav id="picker" class="picker" aria-label="Courses"></nav>
+    <section id="main"></section>
+  </main>
+
+  <dialog id="settingsDialog">
+    <div class="dialog-body">
+      <div class="dialog-head">
+        <h2>Settings</h2>
+        <button class="btn ghost small" data-set-close aria-label="Close">✕</button>
+      </div>
+      <div id="setBody"></div>
+    </div>
+  </dialog>
+
+  <dialog id="addDialog">
+    <form method="dialog" class="dialog-body" id="addForm">
+      <h2 id="addTitle">Add a course</h2>
+      <label class="field" id="nameField">Course name
+        <input name="courseName" placeholder="e.g. CS 6200 — Operating Systems" autocomplete="off">
+      </label>
+      <label class="field" id="linkField">Teams link (optional)
+        <input name="teamsUrl" placeholder="https://teams.microsoft.com/l/team/…" autocomplete="off">
+      </label>
+
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="paste">Paste list</button>
+        <button type="button" class="tab" data-tab="folder">Video files</button>
+        <button type="button" class="tab" data-tab="empty">Start empty</button>
+      </div>
+
+      <div class="tabpane" data-pane="paste">
+        <p class="hint">Paste or type the video list. Put “Week 1”, “Week 2”… on their own lines. Lengths like <code>1:02:33</code>, <code>45:10</code>, <code>1h 5m</code> or <code>45 min</code> are picked up automatically.</p>
+        <textarea name="paste" rows="9" placeholder="Week 1&#10;Intro to the course  12:30&#10;Lecture 1 - Processes  1:05:12&#10;&#10;Week 2&#10;Lecture 2 - Threads  58:40&#10;Lab walkthrough  25 min"></textarea>
+      </div>
+
+      <div class="tabpane hidden" data-pane="folder">
+        <p class="hint">Choose downloaded recordings. Each sub-folder becomes a week, and each video's length is read from the file. Nothing is uploaded.</p>
+        <div class="row">
+          <label class="btn">Choose folder<input type="file" name="folder" webkitdirectory multiple hidden></label>
+          <label class="btn">Choose files<input type="file" name="files" accept="video/*,audio/*" multiple hidden></label>
+        </div>
+        <p class="hint" id="readStatus"></p>
+      </div>
+
+      <div class="tabpane hidden" data-pane="empty">
+        <p class="hint">Creates the course with empty weeks. Add videos by hand afterwards.</p>
+        <label class="field">Number of weeks
+          <input name="weekCount" type="number" min="0" max="52" value="10">
+        </label>
+      </div>
+
+      <div id="preview" class="preview"></div>
+
+      <div class="row end">
+        <button class="btn" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn primary" value="save" id="saveCourse">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="teamsDialog">
+    <div class="dialog-body">
+      <div class="dialog-head">
+        <h2 id="tdTitle">Add from Teams</h2>
+        <button class="btn ghost small" data-td="close" aria-label="Close">✕</button>
+      </div>
+      <div id="tdBody"></div>
+    </div>
+  </dialog>
+
+  <dialog id="playerDialog" class="player-dlg" aria-labelledby="playerTitle">
+    <div class="player-head">
+      <div class="player-titles"><h2 id="playerTitle"></h2><span id="playerInfo" class="muted"></span></div>
+      <select id="playerSpeed" class="pill-select" aria-label="Playback speed">
+        <option value="1">1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="1.75">1.75×</option><option value="2">2×</option>
+      </select>
+      <button class="btn ghost small" data-p="close" aria-label="Close">✕</button>
+    </div>
+    <div id="playerMsg" class="player-msg"></div>
+    <video id="playerVideo" controls playsinline preload="metadata" hidden></video>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script src="store.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
